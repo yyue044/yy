@@ -1,784 +1,838 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>基金反T · 两步高抛低吸</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基金做反T · 三步操作</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --bg: #f0f4f9;
-            --card-bg: #ffffff;
-            --primary: #2a6df4;
-            --primary-light: #e8effd;
-            --text: #1e293b;
-            --text-secondary: #475569;
-            --text-muted: #94a3b8;
-            --border: #e2e8f0;
-            --radius: 16px;
-            --radius-sm: 10px;
-            --green: #0b9e6e;
-            --red: #dc3545;
-            --orange: #e67e22;
-            --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+
         body {
-            font-family: var(--font);
-            background: var(--bg);
-            color: var(--text);
-            padding: 20px 16px 60px;
-            display: flex;
-            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #f1f5f9;
+            padding: 20px 14px;
+            color: #0f172a;
         }
-        .app {
-            max-width: 820px;
-            width: 100%;
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
         }
+
         .header {
             text-align: center;
-            margin-bottom: 24px;
+            padding: 16px 0 24px;
         }
         .header h1 {
             font-size: 26px;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), #6c5ce7);
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #1e3a6f, #2563eb);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         .header p {
-            color: var(--text-secondary);
             font-size: 14px;
+            color: #64748b;
             margin-top: 4px;
         }
-        .badge {
-            display: inline-block;
-            background: var(--primary-light);
-            color: var(--primary);
-            font-size: 12px;
-            font-weight: 600;
-            padding: 2px 16px;
-            border-radius: 20px;
-            margin-top: 6px;
+
+        .step-card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+            padding: 22px 26px;
+            margin-bottom: 22px;
+            border: 1px solid #e9edf2;
+            transition: box-shadow 0.2s;
         }
-        .card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.06);
-            padding: 20px 24px;
-            margin-bottom: 20px;
+        .step-card:hover {
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.09);
         }
-        .card-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .card-title .sub {
-            font-weight: 400;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px 20px;
-        }
-        .grid-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 14px 16px;
-        }
-        .field {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .field label {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-secondary);
-        }
-        .field label .unit {
-            font-weight: 400;
-            color: var(--text-muted);
-            font-size: 12px;
-        }
-        .field input {
-            width: 100%;
-            padding: 9px 14px;
-            border: 1.5px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: 15px;
-            font-weight: 500;
-            background: #fafcff;
-            height: 44px;
-            transition: 0.2s;
-            font-family: var(--font);
-        }
-        .field input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(42,109,244,0.12);
-            background: #fff;
-        }
-        .field input[readonly] {
-            background: #f1f4f9;
-            color: var(--text-secondary);
-            cursor: default;
-        }
-        .field .display-box {
-            background: #f1f4f9;
-            border-radius: var(--radius-sm);
-            padding: 9px 14px;
-            font-size: 15px;
-            font-weight: 500;
-            height: 44px;
+
+        .step-header {
             display: flex;
             align-items: center;
-            color: var(--text-secondary);
-        }
-        .field .display-box .value {
-            font-weight: 700;
-            margin-right: 6px;
-        }
-        .divider {
-            border: none;
-            border-top: 1.5px dashed var(--border);
-            margin: 12px 0 16px;
-        }
-        .result-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
             gap: 12px;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 12px;
         }
-        .result-item {
-            background: var(--bg);
-            border-radius: var(--radius-sm);
-            padding: 12px 14px;
-            text-align: center;
-        }
-        .result-item .label {
-            font-size: 12px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-        .result-item .value {
-            font-size: 20px;
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #2563eb;
+            color: #fff;
             font-weight: 700;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+        .step-title {
+            font-size: 19px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        .step-sub {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-left: auto;
+            font-weight: 400;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px 22px;
+            margin-bottom: 12px;
+        }
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-group {
+            flex: 1 1 140px;
+            min-width: 110px;
+        }
+        .form-group.full {
+            flex: 1 1 100%;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #475569;
+            margin-bottom: 3px;
+        }
+        .form-group .label-hint {
+            font-weight: 400;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+        .form-group .label-readonly {
+            color: #94a3b8;
+            font-weight: 400;
+            font-size: 12px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 7px 10px;
+            border: 1.5px solid #dbe0e7;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #0f172a;
+            background: #fafcff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+            height: 40px;
+        }
+        .form-group input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13);
+            background: #ffffff;
+        }
+        .form-group input::placeholder {
+            color: #b9c3d0;
+            font-weight: 400;
+            font-size: 14px;
+        }
+        .form-group input:read-only {
+            background: #f1f5f9;
+            color: #1e293b;
+            cursor: default;
+            border-color: #e2e8f0;
+        }
+        .form-group input:read-only:focus {
+            box-shadow: none;
+            border-color: #e2e8f0;
+        }
+
+        .form-group .unit {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+            display: block;
+        }
+
+        /* 输出网格 - 两列布局 */
+        .output-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 16px;
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            border: 1px solid #eef2f6;
+        }
+        .output-item {
+            /* 默认占一列 */
+            grid-column: span 1;
+        }
+        .output-item.full-width {
+            grid-column: 1 / -1;
+        }
+        .output-item .label {
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+        }
+        .output-item .value {
+            font-size: 17px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-top: 1px;
+        }
+        .output-item .value.positive {
+            color: #16a34a;
+        }
+        .output-item .value.negative {
+            color: #dc2626;
+        }
+        .output-item .value.neutral {
+            color: #f59e0b;
+        }
+        .output-item .value.big {
+            font-size: 21px;
+        }
+
+        .output-divider {
+            grid-column: 1 / -1;
+            height: 1px;
+            background: #e9edf2;
+            margin: 4px 0;
+        }
+
+        .sub-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            margin: 14px 0 8px 0;
+            padding-left: 2px;
+        }
+        .sub-section-title:first-of-type {
             margin-top: 2px;
         }
-        .result-item .value.green { color: var(--green); }
-        .result-item .value.red { color: var(--red); }
-        .result-item .value.orange { color: var(--orange); }
-        .result-item .value.primary { color: var(--primary); }
-        .highlight-box {
-            background: var(--primary-light);
-            border-radius: var(--radius-sm);
-            padding: 16px 20px;
-            margin-top: 14px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 10px;
-        }
-        .highlight-box .big {
-            font-size: 28px;
-            font-weight: 700;
-        }
-        .highlight-box .big.green { color: var(--green); }
-        .highlight-box .big.red { color: var(--red); }
-        .highlight-box .big.orange { color: var(--orange); }
-        .highlight-box .tag {
-            background: #fff;
-            padding: 4px 16px;
-            border-radius: 20px;
-            font-weight: 600;
+
+        .note {
             font-size: 13px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-        .highlight-box .tag.green { color: var(--green); }
-        .highlight-box .tag.red { color: var(--red); }
-        .highlight-box .tag.orange { color: var(--orange); }
-        .fee-row {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-top: 4px;
-        }
-        .fee-row .field {
-            flex: 1;
-            min-width: 100px;
-        }
-        .actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 16px;
-        }
-        .btn {
-            padding: 9px 24px;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            font-family: var(--font);
-            background: var(--border);
-            color: var(--text-secondary);
-        }
-        .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        .btn-primary {
-            background: var(--primary);
-            color: #fff;
-        }
-        .btn-primary:hover { background: #1a4fbd; }
-        .btn-outline {
-            background: transparent;
-            border: 1.5px solid var(--border);
-        }
-        .btn-outline:hover { background: var(--bg); }
-        .hint {
-            font-size: 13px;
-            color: var(--text-muted);
-            padding: 6px 12px;
+            color: #94a3b8;
+            margin-top: 8px;
+            padding: 6px 14px;
             background: #f8fafc;
             border-radius: 6px;
-            border-left: 3px solid var(--border);
-            margin-top: 6px;
+            border-left: 3px solid #dbe0e7;
         }
-        .hint strong { color: var(--text-secondary); }
-        .step-badge {
+        .note strong {
+            color: #475569;
+        }
+
+        input:focus {
+            outline: none;
+        }
+
+        .text-muted {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .inline-label {
             display: inline-block;
-            background: var(--primary);
-            color: #fff;
+            font-size: 13px;
+            font-weight: 500;
+            color: #475569;
+            margin-right: 4px;
+        }
+
+        .mt-1 {
+            margin-top: 8px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 640px) {
+            .step-card {
+                padding: 16px 14px;
+            }
+            .form-group {
+                flex: 1 1 100%;
+                min-width: 0;
+            }
+            .output-grid {
+                grid-template-columns: 1fr;
+                gap: 4px 0;
+            }
+            .output-item {
+                grid-column: 1 / -1 !important;
+            }
+            .header h1 {
+                font-size: 21px;
+            }
+            .step-title {
+                font-size: 16px;
+            }
+            .output-item .value {
+                font-size: 15px;
+            }
+            .form-group input {
+                font-size: 14px;
+                height: 36px;
+                padding: 5px 8px;
+            }
+            .output-item .value.big {
+                font-size: 18px;
+            }
+        }
+
+        .calc-note {
+            font-size: 13px;
+            color: #6b7a8f;
+            background: #f1f5f9;
+            padding: 2px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 2px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e9edf2;
+            color: #475569;
             font-size: 12px;
-            font-weight: 700;
-            padding: 2px 12px;
-            border-radius: 20px;
-            margin-right: 8px;
-        }
-        .sub-step-badge {
-            background: #6c5ce7;
-        }
-        @media (max-width: 600px) {
-            .grid-2, .grid-3 { grid-template-columns: 1fr; }
-            .result-grid { grid-template-columns: 1fr; }
-            .card { padding: 16px; }
-            .highlight-box { flex-direction: column; align-items: stretch; text-align: center; }
-            .fee-row { flex-direction: column; }
-        }
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            opacity: 0.5;
-            height: 30px;
-        }
-        input[type="number"] { -moz-appearance: textfield; }
-        .text-muted { color: var(--text-muted); }
-        .fw-600 { font-weight: 600; }
-        .mt-2 { margin-top: 8px; }
-        .sub-step-title {
-            font-weight: 600;
-            font-size: 15px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .sub-step-title .badge-sm {
-            background: #6c5ce7;
-            color: #fff;
-            padding: 0 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            line-height: 22px;
+            padding: 0 8px;
+            border-radius: 4px;
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
-<div class="app">
-    <header class="header">
-        <h1>📈 基金反T · 两步高抛低吸</h1>
-        <p>第一步：当前概况 ｜ 第二步 2.1：涨后卖出 ｜ 第二步 2.2：跌后买回</p>
-        <span class="badge">⚡ 点击输入框全选 · 金额/份额两位 · 净值/成本四位</span>
-    </header>
 
-    <!-- ===== 第一步：当前持仓 ===== -->
-    <section class="card">
-        <div class="card-title">
-            <span><span class="step-badge">第一步</span> 当前持仓概况</span>
-            <span class="sub">输入份额、成本、净值，自动计算</span>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>📊 基金做反T · 三步闭环</h1>
+            <p>涨幅卖出 · 跌幅接回 · 摊薄成本</p>
         </div>
-        <div class="grid-3">
-            <div class="field">
-                <label>持有份额 <span class="unit">(份)</span></label>
-                <input type="number" id="holdShares" step="0.0001" min="0" value="" placeholder="0.0000" onfocus="this.select()" />
+
+        <!-- ============================================================ -->
+        <!-- 第一步：基金概况生成（原始持仓） -->
+        <!-- ============================================================ -->
+        <div class="step-card" id="step1">
+            <div class="step-header">
+                <span class="step-number">1</span>
+                <span class="step-title">基金概况生成</span>
+                <span class="step-sub">原始持仓</span>
             </div>
-            <div class="field">
-                <label>持仓成本 <span class="unit">(元/份)</span></label>
-                <input type="number" id="holdCost" step="0.0001" min="0" value="" placeholder="0.0000" onfocus="this.select()" />
-            </div>
-            <div class="field">
-                <label>今日净值 <span class="unit">(元/份)</span></label>
-                <input type="number" id="todayNav" step="0.0001" min="0" value="" placeholder="0.0000" onfocus="this.select()" />
-            </div>
-        </div>
-        <div class="grid-3" style="margin-top:12px;">
-            <div class="field">
-                <label>总投入成本</label>
-                <div class="display-box" id="totalCostDisplay">0.00</div>
-            </div>
-            <div class="field">
-                <label>当前持有金额</label>
-                <div class="display-box" id="currentValueDisplay">0.00</div>
-            </div>
-            <div class="field">
-                <label>当前盈亏</label>
-                <div class="display-box" id="currentProfitDisplay" style="justify-content:space-between;">
-                    <span id="profitAmount">0.00</span>
-                    <span style="color:var(--text-muted);">|</span>
-                    <span id="profitPercent">0.00%</span>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>持有份额 <span class="label-hint">(份)</span></label>
+                    <input type="text" id="holdShares" value="10000" onfocus="this.select()" inputmode="decimal">
+                </div>
+                <div class="form-group">
+                    <label>持仓成本 <span class="label-hint">(元/份)</span></label>
+                    <input type="text" id="holdCost" value="1.2345" onfocus="this.select()" inputmode="decimal">
+                </div>
+                <div class="form-group">
+                    <label>今日净值 <span class="label-hint">(元/份)</span></label>
+                    <input type="text" id="netValue1" value="1.3456" onfocus="this.select()" inputmode="decimal">
                 </div>
             </div>
-        </div>
-        <div class="hint">
-            💡 总投入 = 份额 × 成本 ｜ 持有金额 = 份额 × 净值 ｜ 盈亏 = 持有金额 - 总投入
-        </div>
-    </section>
 
-    <!-- ===== 第二步 2.1：涨后卖出 ===== -->
-    <section class="card">
-        <div class="card-title">
-            <span><span class="step-badge">第二步 2.1</span> 涨后卖出</span>
-            <span class="sub">输入涨率、卖出份额，计算卖出后概况</span>
-        </div>
-        <div class="grid-3">
-            <div class="field">
-                <label>预估涨率 <span class="unit">(%)</span></label>
-                <input type="number" id="upRate" step="0.01" value="0" placeholder="例如 5" onfocus="this.select()" />
-                <div class="hint" style="border-left-color:var(--orange);">今日上涨幅度</div>
-            </div>
-            <div class="field">
-                <label>卖出份额 <span class="unit">(份)</span></label>
-                <input type="number" id="sellShares" step="0.0001" min="0" value="0" placeholder="0.0000" onfocus="this.select()" />
-            </div>
-            <div class="field">
-                <label>卖出比例 <span class="unit">(%)</span></label>
-                <input type="number" id="sellRatio" step="0.01" min="0" max="100" value="0" placeholder="例如 30" onfocus="this.select()" />
-                <div class="hint" style="border-left-color:var(--primary);">与卖出份额二选一</div>
-            </div>
-        </div>
-        <div class="fee-row" style="margin-top:8px;">
-            <div class="field">
-                <label>卖出费率 <span class="unit">(%)</span></label>
-                <input type="number" id="sellFee" step="0.0001" min="0" value="0" placeholder="0" onfocus="this.select()" />
-            </div>
-            <div style="display:flex; align-items:flex-end; padding-bottom:2px;">
-                <button class="btn btn-outline" id="resetSellFee">↺ 归零</button>
-            </div>
-        </div>
-
-        <hr class="divider" />
-        <div class="sub-step-title"><span class="badge-sm">📤 卖出后概况</span></div>
-        <div class="result-grid">
-            <div class="result-item">
-                <div class="label">卖出净值</div>
-                <div class="value orange" id="sellNavDisplay">0.0000</div>
-                <div class="sub-text">元/份</div>
-            </div>
-            <div class="result-item">
-                <div class="label">卖出所得（净）</div>
-                <div class="value primary" id="sellAmountDisplay">0.00</div>
-                <div class="sub-text">元</div>
-            </div>
-            <div class="result-item">
-                <div class="label">剩余份额</div>
-                <div class="value" id="remainSharesDisplay">0.00</div>
-                <div class="sub-text">份</div>
-            </div>
-            <div class="result-item">
-                <div class="label">剩余成本</div>
-                <div class="value" id="remainCostDisplay">0.00</div>
-                <div class="sub-text">元</div>
-            </div>
-            <div class="result-item">
-                <div class="label">剩余市值</div>
-                <div class="value" id="remainValueDisplay">0.00</div>
-                <div class="sub-text">元</div>
-            </div>
-            <div class="result-item">
-                <div class="label">剩余盈亏</div>
-                <div class="value" id="remainProfitDisplay">0.00</div>
-                <div class="sub-text">元</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== 第二步 2.2：跌后买回 ===== -->
-    <section class="card">
-        <div class="card-title">
-            <span><span class="step-badge" style="background:#6c5ce7;">第二步 2.2</span> 跌后买回</span>
-            <span class="sub">输入跌率，计算买入后最终成本</span>
-        </div>
-        <div class="grid-2">
-            <div class="field">
-                <label>预估跌率 <span class="unit">(%)</span></label>
-                <input type="number" id="downRate" step="0.01" value="0" placeholder="例如 -10" onfocus="this.select()" />
-                <div class="hint" style="border-left-color:var(--red);">明日下跌幅度（负值）</div>
-            </div>
-            <div class="field">
-                <label>买入费率 <span class="unit">(%)</span></label>
-                <input type="number" id="buyFee" step="0.0001" min="0" value="0" placeholder="0" onfocus="this.select()" />
-                <div style="margin-top:4px;">
-                    <button class="btn btn-outline" id="resetBuyFee">↺ 归零</button>
+            <div class="output-grid" id="step1Output">
+                <div class="output-item">
+                    <div class="label">💰 总投入金额</div>
+                    <div class="value" id="totalInvest">--</div>
+                </div>
+                <div class="output-item">
+                    <div class="label">📈 持有金额</div>
+                    <div class="value" id="holdAmount">--</div>
+                </div>
+                <div class="output-item">
+                    <div class="label">📉 持有盈亏</div>
+                    <div class="value" id="holdProfit">--</div>
+                </div>
+                <div class="output-item">
+                    <div class="label">📊 持有收益率</div>
+                    <div class="value" id="holdReturn">--</div>
                 </div>
             </div>
-        </div>
-
-        <hr class="divider" />
-        <div class="sub-step-title"><span class="badge-sm">📥 买入后概况（最终结果）</span></div>
-        <div class="result-grid">
-            <div class="result-item">
-                <div class="label">买入净值</div>
-                <div class="value orange" id="buyNavDisplay">0.0000</div>
-                <div class="sub-text">元/份</div>
-            </div>
-            <div class="result-item">
-                <div class="label">买入所需（净）</div>
-                <div class="value" id="buyAmountDisplay">0.00</div>
-                <div class="sub-text">元</div>
-            </div>
-            <div class="result-item">
-                <div class="label">买卖资金差额</div>
-                <div class="value" id="cashDiffDisplay">0.00</div>
-                <div class="sub-text">卖出 − 买入</div>
-            </div>
-            <div class="result-item">
-                <div class="label">新持仓成本</div>
-                <div class="value primary" id="newCostDisplay">0.0000</div>
-                <div class="sub-text">元/份</div>
-            </div>
-            <div class="result-item">
-                <div class="label">新盈亏（按今日净值）</div>
-                <div class="value" id="newProfitDisplay">0.00</div>
-                <div class="sub-text">元</div>
-            </div>
-            <div class="result-item">
-                <div class="label">新收益率</div>
-                <div class="value" id="newProfitRateDisplay">0.00%</div>
-                <div class="sub-text">按今日净值</div>
+            <div class="note">
+                <strong>📌 基准数据：</strong> 持仓成本 &amp; 今日净值保留 <strong>4位小数</strong>，其余保留 <strong>2位小数</strong>。
             </div>
         </div>
 
-        <!-- 成本变化高亮 -->
-        <div class="highlight-box" id="highlightBox">
-            <div class="left">
-                <span style="font-weight:500;">📉 成本变化</span>
-                <span class="big" id="costChangeDisplay">—</span>
-                <span style="font-size:15px;color:var(--text-secondary);" id="costChangePercentDisplay">—</span>
+        <!-- ============================================================ -->
+        <!-- 第二步：涨幅卖出（预估） -->
+        <!-- ============================================================ -->
+        <div class="step-card" id="step2">
+            <div class="step-header">
+                <span class="step-number">2</span>
+                <span class="step-title">涨幅卖出</span>
+                <span class="step-sub">预估卖出金额</span>
             </div>
-            <div>
-                <span class="tag" id="suggestionTag">⏳ 请填入数据</span>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>
+                        今日净值
+                        <span class="label-readonly">(固定值)</span>
+                    </label>
+                    <input type="text" id="netValue2" readonly value="1.3456" onfocus="this.select()">
+                    <span class="unit">来自第一步 · 不可修改</span>
+                </div>
+                <div class="form-group">
+                    <label>涨幅 <span class="label-hint">(%)</span></label>
+                    <input type="text" id="riseRate" value="2.5" onfocus="this.select()" inputmode="decimal">
+                </div>
+                <div class="form-group">
+                    <label>涨幅预估净值 <span class="label-hint">(元/份)</span></label>
+                    <input type="text" id="riseNet" readonly value="1.3792" onfocus="this.select()">
+                    <span class="unit">自动计算</span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>卖出份额 <span class="label-hint">(份)</span></label>
+                    <input type="text" id="sellShares" value="2000" onfocus="this.select()" inputmode="decimal">
+                </div>
+                <div class="form-group">
+                    <label>卖出费率 <span class="label-hint">(%, 默认0)</span></label>
+                    <input type="text" id="feeRate2" value="0" onfocus="this.select()" inputmode="decimal">
+                </div>
+                <div class="form-group" style="flex:1 1 180px;">
+                    <label style="visibility:hidden;">占位</label>
+                    <div style="font-size:15px;font-weight:600;color:#0f172a;padding-top:4px;">
+                        💵 预估卖出金额
+                        <span id="sellAmountDisplay" style="font-size:22px;margin-left:6px;color:#2563eb;">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sub-section-title">📋 卖出后剩余概况</div>
+            <div class="output-grid" id="step2Output">
+                <div class="output-item">
+                    <div class="label">📦 剩余份额</div>
+                    <div class="value" id="remainShares">--</div>
+                </div>
+                <div class="output-item">
+                    <div class="label">💰 剩余总投入</div>
+                    <div class="value" id="remainInvest">--</div>
+                </div>
+                <div class="output-item">
+                    <div class="label">📈 剩余持有金额</div>
+                    <div class="value" id="remainAmount">--</div>
+                </div>
+                <div class="output-item">
+                    <div class="label">📉 剩余持有盈亏</div>
+                    <div class="value" id="remainProfit">--</div>
+                </div>
+                <div class="output-item">
+                    <div class="label">📊 剩余持有收益率</div>
+                    <div class="value" id="remainReturn">--</div>
+                </div>
+            </div>
+            <div class="note">
+                <strong>🧮 计算规则：</strong> 涨幅预估净值 = 今日净值 × (1 + 涨幅%) &nbsp;·&nbsp; 卖出金额 = 涨幅预估净值 × 卖出份额 × (1 − 卖出费率%)
             </div>
         </div>
 
-        <div class="actions">
-            <button class="btn btn-primary" id="calcBtn">⟳ 重新计算</button>
-            <button class="btn btn-outline" id="resetBtn">↺ 重置所有</button>
-            <button class="btn btn-outline" id="exampleBtn">📋 示例数据</button>
-        </div>
-    </section>
+        <!-- ============================================================ -->
+        <!-- 第三步：跌幅买入（接回） -->
+        <!-- ============================================================ -->
+        <div class="step-card" id="step3">
+            <div class="step-header">
+                <span class="step-number">3</span>
+                <span class="step-title">跌幅买入</span>
+                <span class="step-sub">接回 · 摊薄成本</span>
+            </div>
 
-    <div style="text-align:center; font-size:12px; color:var(--text-muted); padding-top:12px; border-top:1px solid var(--border);">
-        默认费率为0，可自行调整 ｜ 投资有风险，操作需谨慎
+            <div class="form-row">
+                <div class="form-group">
+                    <label>
+                        今日净值
+                        <span class="label-hint">(可修改)</span>
+                    </label>
+                    <input type="text" id="netValue3" value="1.3792" onfocus="this.select()" inputmode="decimal">
+                    <span class="unit">默认 = 第二步涨幅预估净值</span>
+                </div>
+                <div class="form-group">
+                    <label>跌幅预估 <span class="label-hint">(%, 可输入负数)</span></label>
+                    <input type="text" id="dropRate" value="-3" onfocus="this.select()" inputmode="decimal">
+                </div>
+                <div class="form-group">
+                    <label>跌幅预估净值 <span class="label-hint">(元/份)</span></label>
+                    <input type="text" id="dropNet" readonly value="1.3378" onfocus="this.select()">
+                    <span class="unit">自动计算</span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>买入份额 <span class="label-hint">(份)</span></label>
+                    <input type="text" id="buyShares" value="2000" onfocus="this.select()" inputmode="decimal">
+                    <span class="unit">默认 = 第二步卖出份额</span>
+                </div>
+                <div class="form-group">
+                    <label>买入费率 <span class="label-hint">(%, 默认0)</span></label>
+                    <input type="text" id="feeRate3" value="0" onfocus="this.select()" inputmode="decimal">
+                </div>
+                <div class="form-group" style="flex:1 1 180px;">
+                    <label style="visibility:hidden;">占位</label>
+                    <div style="font-size:15px;font-weight:600;color:#0f172a;padding-top:4px;">
+                        💵 预估买入金额
+                        <span id="buyAmountDisplay" style="font-size:22px;margin-left:6px;color:#2563eb;">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="output-grid" style="margin-top:4px;">
+                <div class="output-item full-width">
+                    <div class="label">🔄 一卖一买差价 <span class="text-muted">(卖出金额 − 买入金额)</span></div>
+                    <div class="value big" id="diffAmount">--</div>
+                </div>
+                <div class="output-item full-width">
+                    <div class="label">📊 新持仓成本 <span class="text-muted">(加权平均)</span></div>
+                    <div class="value big" id="newCost">--</div>
+                </div>
+                <div class="output-item full-width">
+                    <div class="label">📉 成本降低 <span class="text-muted">(原成本 − 新成本)</span></div>
+                    <div class="value big" id="costReduce">--</div>
+                </div>
+                <div class="output-divider"></div>
+                <div class="output-item">
+                    <div class="label">📦 新总份额</div>
+                    <div class="value" id="newTotalShares">--</div>
+                </div>
+                <div class="output-item">
+                    <div class="label">💰 新总投入</div>
+                    <div class="value" id="newTotalInvest">--</div>
+                </div>
+                <div class="output-item">
+                    <div class="label">📈 新持有金额</div>
+                    <div class="value" id="newTotalAmount">--</div>
+                </div>
+                <div class="output-item">
+                    <div class="label">📉 新持有盈亏</div>
+                    <div class="value" id="newTotalProfit">--</div>
+                </div>
+                <div class="output-item">
+                    <div class="label">📊 新持有收益率</div>
+                    <div class="value" id="newTotalReturn">--</div>
+                </div>
+            </div>
+            <div class="note">
+                <strong>🎯 核心逻辑：</strong> 跌幅预估净值 = 今日净值 × (1 + 跌幅%) &nbsp;·&nbsp; 买入金额 = 跌幅预估净值 × 买入份额 × (1 + 买入费率%)<br>
+                差价 = 卖出金额 − 买入金额 &nbsp;·&nbsp; 新持仓成本 = (剩余总投入 + 买入金额) / (剩余份额 + 买入份额)<br>
+                <strong>💡 同步规则：</strong> 第三步“今日净值”默认跟随第二步涨幅净值；一旦您手动修改，则不再自动更新，且不会影响第二步。
+            </div>
+        </div>
+
+        <div style="text-align:center;padding:10px 0 4px;font-size:13px;color:#94a3b8;">
+            ✦ 所有输入框点击即全选 · 数据实时联动更新 ✦
+        </div>
     </div>
-</div>
 
-<script>
-(function() {
-    const $ = id => document.getElementById(id);
+    <script>
+        (function() {
+            'use strict';
 
-    // 第一步输入
-    const holdShares = $('holdShares');
-    const holdCost = $('holdCost');
-    const todayNav = $('todayNav');
+            // ----- DOM 引用 -----
+            // 第一步
+            const elHoldShares = document.getElementById('holdShares');
+            const elHoldCost = document.getElementById('holdCost');
+            const elNetValue1 = document.getElementById('netValue1');
 
-    // 2.1 输入
-    const upRate = $('upRate');
-    const sellShares = $('sellShares');
-    const sellRatio = $('sellRatio');
-    const sellFee = $('sellFee');
+            const elTotalInvest = document.getElementById('totalInvest');
+            const elHoldAmount = document.getElementById('holdAmount');
+            const elHoldProfit = document.getElementById('holdProfit');
+            const elHoldReturn = document.getElementById('holdReturn');
 
-    // 2.2 输入
-    const downRate = $('downRate');
-    const buyFee = $('buyFee');
+            // 第二步
+            const elNetValue2 = document.getElementById('netValue2');
+            const elRiseRate = document.getElementById('riseRate');
+            const elRiseNet = document.getElementById('riseNet');
+            const elSellShares = document.getElementById('sellShares');
+            const elFeeRate2 = document.getElementById('feeRate2');
+            const elSellAmountDisplay = document.getElementById('sellAmountDisplay');
 
-    // 第一步显示
-    const totalCostDisplay = $('totalCostDisplay');
-    const currentValueDisplay = $('currentValueDisplay');
-    const profitAmount = $('profitAmount');
-    const profitPercent = $('profitPercent');
+            const elRemainShares = document.getElementById('remainShares');
+            const elRemainInvest = document.getElementById('remainInvest');
+            const elRemainAmount = document.getElementById('remainAmount');
+            const elRemainProfit = document.getElementById('remainProfit');
+            const elRemainReturn = document.getElementById('remainReturn');
 
-    // 2.1 显示
-    const sellNavDisplay = $('sellNavDisplay');
-    const sellAmountDisplay = $('sellAmountDisplay');
-    const remainSharesDisplay = $('remainSharesDisplay');
-    const remainCostDisplay = $('remainCostDisplay');
-    const remainValueDisplay = $('remainValueDisplay');
-    const remainProfitDisplay = $('remainProfitDisplay');
+            // 第三步
+            const elNetValue3 = document.getElementById('netValue3');
+            const elDropRate = document.getElementById('dropRate');
+            const elDropNet = document.getElementById('dropNet');
+            const elBuyShares = document.getElementById('buyShares');
+            const elFeeRate3 = document.getElementById('feeRate3');
+            const elBuyAmountDisplay = document.getElementById('buyAmountDisplay');
 
-    // 2.2 显示
-    const buyNavDisplay = $('buyNavDisplay');
-    const buyAmountDisplay = $('buyAmountDisplay');
-    const cashDiffDisplay = $('cashDiffDisplay');
-    const newCostDisplay = $('newCostDisplay');
-    const newProfitDisplay = $('newProfitDisplay');
-    const newProfitRateDisplay = $('newProfitRateDisplay');
-    const costChangeDisplay = $('costChangeDisplay');
-    const costChangePercentDisplay = $('costChangePercentDisplay');
-    const suggestionTag = $('suggestionTag');
+            const elDiffAmount = document.getElementById('diffAmount');
+            const elNewCost = document.getElementById('newCost');
+            const elCostReduce = document.getElementById('costReduce');
+            const elNewTotalShares = document.getElementById('newTotalShares');
+            const elNewTotalInvest = document.getElementById('newTotalInvest');
+            const elNewTotalAmount = document.getElementById('newTotalAmount');
+            const elNewTotalProfit = document.getElementById('newTotalProfit');
+            const elNewTotalReturn = document.getElementById('newTotalReturn');
 
-    // ===== 格式化 =====
-    function fmt2(v) {
-        if (!isFinite(v)) return '0.00';
-        return Number(v).toFixed(2);
-    }
-    function fmt4(v) {
-        if (!isFinite(v)) return '0.0000';
-        return Number(v).toFixed(4);
-    }
-    function fmtPercent(v) {
-        if (!isFinite(v)) return '0.00';
-        return Number(v).toFixed(2);
-    }
-    function parseNum(el) {
-        const v = parseFloat(el.value);
-        return isNaN(v) ? 0 : v;
-    }
-    function setVal(el, v) {
-        el.value = fmt4(v);
-    }
+            // ----- 状态：第三步净值是否被用户主动修改 -----
+            let isNetValue3ManuallyEdited = false;
 
-    // ===== 核心计算 =====
-    function compute() {
-        // 读取第一步
-        const S = parseNum(holdShares);
-        const C = parseNum(holdCost);
-        const N = parseNum(todayNav);
-
-        // 读取 2.1
-        const up = parseNum(upRate);
-        let S_sell = parseNum(sellShares);
-        const ratio = parseNum(sellRatio);
-        const feeSell = parseNum(sellFee) / 100;
-
-        // 读取 2.2
-        const down = parseNum(downRate);
-        const feeBuy = parseNum(buyFee) / 100;
-
-        // ---- 卖出份额联动 ----
-        if (ratio > 0 && S > 0 && S_sell === 0) {
-            S_sell = S * (ratio / 100);
-        }
-        if (S_sell > S) S_sell = S;
-
-        // ---- 第一步概况 ----
-        const totalCost = S * C;
-        const currentValue = S * N;
-        const profit = currentValue - totalCost;
-        const profitRate = totalCost !== 0 ? (profit / totalCost) * 100 : 0;
-
-        // ---- 2.1 卖出 ----
-        const sellNav = N * (1 + up / 100);
-        const sellAmount = S_sell * sellNav * (1 - feeSell);
-        const remainShares = S - S_sell;
-        const remainCost = totalCost - S_sell * C;   // 剩余成本（原成本扣除卖出的成本）
-        const remainValue = remainShares * sellNav;   // 剩余市值按卖出净值算
-        const remainProfit = remainValue - remainCost;
-
-        // ---- 2.2 买入 ----
-        const buyNav = sellNav * (1 + down / 100);    // 买入净值 = 卖出净值 × (1 + 跌率)
-        const buyAmount = S_sell * buyNav * (1 + feeBuy);
-        const newTotalCost = remainCost + buyAmount;
-        const newCost = S > 0 ? newTotalCost / S : 0;   // 总份额不变（因为买回同样份额）
-        const newValue = S * N;                          // 按今日净值计算市值
-        const newProfit = newValue - newTotalCost;
-        const newProfitRate = newTotalCost !== 0 ? (newProfit / newTotalCost) * 100 : 0;
-
-        // 成本变化
-        let costChange = 0, costChangePct = 0;
-        if (C > 0 && S_sell > 0 && buyNav > 0) {
-            costChange = C - newCost;
-            costChangePct = (costChange / C) * 100;
-        }
-        const cashDiff = sellAmount - buyAmount;
-
-        // ===== 更新显示 =====
-        // 第一步
-        totalCostDisplay.textContent = fmt2(totalCost);
-        currentValueDisplay.textContent = fmt2(currentValue);
-        profitAmount.textContent = fmt2(profit);
-        profitAmount.style.color = profit === 0 ? 'var(--text-muted)' : (profit > 0 ? 'var(--green)' : 'var(--red)');
-        profitPercent.textContent = fmtPercent(profitRate) + '%';
-        profitPercent.style.color = profitRate === 0 ? 'var(--text-muted)' : (profitRate > 0 ? 'var(--green)' : 'var(--red)');
-
-        // 2.1 卖出后
-        sellNavDisplay.textContent = fmt4(sellNav);
-        sellAmountDisplay.textContent = fmt2(sellAmount);
-        remainSharesDisplay.textContent = fmt2(remainShares);
-        remainCostDisplay.textContent = fmt2(remainCost);
-        remainValueDisplay.textContent = fmt2(remainValue);
-        remainProfitDisplay.textContent = fmt2(remainProfit);
-        remainProfitDisplay.style.color = remainProfit === 0 ? 'var(--text-muted)' : (remainProfit > 0 ? 'var(--green)' : 'var(--red)');
-
-        // 2.2 买入后
-        buyNavDisplay.textContent = fmt4(buyNav);
-        buyAmountDisplay.textContent = fmt2(buyAmount);
-        cashDiffDisplay.textContent = fmt2(cashDiff);
-        cashDiffDisplay.style.color = cashDiff >= 0 ? 'var(--green)' : 'var(--red)';
-        newCostDisplay.textContent = fmt4(newCost);
-        newProfitDisplay.textContent = fmt2(newProfit);
-        newProfitDisplay.style.color = newProfit === 0 ? 'var(--text-muted)' : (newProfit > 0 ? 'var(--green)' : 'var(--red)');
-        newProfitRateDisplay.textContent = fmtPercent(newProfitRate) + '%';
-        newProfitRateDisplay.style.color = newProfitRate === 0 ? 'var(--text-muted)' : (newProfitRate > 0 ? 'var(--green)' : 'var(--red)');
-
-        // 成本变化
-        if (C > 0 && S_sell > 0 && buyNav > 0 && S_sell > 0) {
-            if (costChange > 0.0001) {
-                costChangeDisplay.textContent = '↓ ' + fmt2(costChange);
-                costChangeDisplay.className = 'big green';
-                costChangePercentDisplay.textContent = '(' + fmtPercent(costChangePct) + '%)';
-                costChangePercentDisplay.style.color = 'var(--green)';
-                suggestionTag.textContent = '✅ 成本降低，反T有效';
-                suggestionTag.className = 'tag green';
-            } else if (costChange < -0.0001) {
-                costChangeDisplay.textContent = '↑ ' + fmt2(Math.abs(costChange));
-                costChangeDisplay.className = 'big red';
-                costChangePercentDisplay.textContent = '(' + fmtPercent(costChangePct) + '%)';
-                costChangePercentDisplay.style.color = 'var(--red)';
-                suggestionTag.textContent = '⚠️ 成本上升，反T无效（跌率不足或涨率过高）';
-                suggestionTag.className = 'tag red';
-            } else {
-                costChangeDisplay.textContent = '0.00';
-                costChangeDisplay.className = 'big';
-                costChangePercentDisplay.textContent = '(0.00%)';
-                costChangePercentDisplay.style.color = 'var(--text-muted)';
-                suggestionTag.textContent = '➖ 成本持平';
-                suggestionTag.className = 'tag orange';
+            // ----- 辅助函数 -----
+            function toNum(v) {
+                const n = parseFloat(v);
+                return isNaN(n) ? 0 : n;
             }
-        } else {
-            costChangeDisplay.textContent = '—';
-            costChangeDisplay.className = 'big';
-            costChangePercentDisplay.textContent = '';
-            if (S === 0 || C === 0 || N === 0) {
-                suggestionTag.textContent = '⏳ 请填写完整第一步数据';
-                suggestionTag.className = 'tag';
-            } else if (S_sell === 0) {
-                suggestionTag.textContent = '📌 请设定卖出份额或比例';
-                suggestionTag.className = 'tag';
-            } else if (buyNav <= 0) {
-                suggestionTag.textContent = '📌 买入净值需大于0';
-                suggestionTag.className = 'tag';
-            } else {
-                suggestionTag.textContent = '⏳ 数据不完整';
-                suggestionTag.className = 'tag';
+
+            function fmt(v, digits) {
+                if (digits === undefined) digits = 2;
+                if (!isFinite(v)) return '--';
+                return v.toFixed(digits);
             }
-        }
-    }
 
-    // ===== 联动：卖出份额 ↔ 比例 =====
-    function syncSellInputs(changed) {
-        const S = parseNum(holdShares);
-        let sVal = parseNum(sellShares);
-        let rVal = parseNum(sellRatio);
-        if (changed === 'shares') {
-            if (S > 0 && sVal > 0) {
-                const r = (sVal / S) * 100;
-                setVal(sellRatio, r);
-            } else if (sVal === 0) {
-                setVal(sellRatio, 0);
+            function fmt4(v) {
+                return fmt(v, 4);
             }
-        } else if (changed === 'ratio') {
-            if (S > 0 && rVal > 0) {
-                const s = S * (rVal / 100);
-                setVal(sellShares, s);
-            } else if (rVal === 0) {
-                setVal(sellShares, 0);
+
+            function fmt2(v) {
+                return fmt(v, 2);
             }
-        }
-        compute();
-    }
 
-    // ===== 重置 & 示例 =====
-    function resetAll() {
-        setVal(holdShares, 0);
-        setVal(holdCost, 0);
-        setVal(todayNav, 0);
-        setVal(upRate, 0);
-        setVal(sellShares, 0);
-        setVal(sellRatio, 0);
-        setVal(downRate, 0);
-        setVal(sellFee, 0);
-        setVal(buyFee, 0);
-        compute();
-    }
+            function fmtPercent(v) {
+                if (!isFinite(v)) return '--';
+                return fmt(v * 100, 2) + '%';
+            }
 
-    function loadExample() {
-        setVal(holdShares, 756.23);
-        setVal(holdCost, 5.7089);
-        setVal(todayNav, 4.0090);
-        setVal(upRate, 5);
-        setVal(sellShares, 300);
-        setVal(sellRatio, 0);
-        setVal(downRate, -10);
-        setVal(sellFee, 0);
-        setVal(buyFee, 0);
-        compute();
-    }
+            function colorClass(v) {
+                if (v > 0) return 'positive';
+                if (v < 0) return 'negative';
+                return 'neutral';
+            }
 
-    function resetSellFee() {
-        setVal(sellFee, 0);
-        compute();
-    }
-    function resetBuyFee() {
-        setVal(buyFee, 0);
-        compute();
-    }
+            // 设置元素值和颜色
+            function setVal(el, v, digits, isPercent) {
+                if (isPercent) {
+                    el.textContent = fmtPercent(v);
+                } else {
+                    el.textContent = fmt(v, digits);
+                }
+                el.className = 'value ' + colorClass(v);
+            }
 
-    // ===== 绑定事件 =====
-    function bindInput(el, handler) {
-        el.addEventListener('input', handler);
-        el.addEventListener('change', handler);
-    }
+            // 设置纯文本值（无颜色）
+            function setValPlain(el, v, digits) {
+                el.textContent = fmt(v, digits);
+                el.className = 'value';
+            }
 
-    bindInput(holdShares, compute);
-    bindInput(holdCost, compute);
-    bindInput(todayNav, compute);
-    bindInput(upRate, compute);
-    bindInput(downRate, compute);
-    bindInput(sellShares, () => syncSellInputs('shares'));
-    bindInput(sellRatio, () => syncSellInputs('ratio'));
-    bindInput(sellFee, compute);
-    bindInput(buyFee, compute);
+            // 设置大号值带颜色
+            function setValBig(el, v, digits) {
+                el.textContent = fmt(v, digits);
+                el.className = 'value big ' + colorClass(v);
+            }
 
-    document.getElementById('resetSellFee').addEventListener('click', resetSellFee);
-    document.getElementById('resetBuyFee').addEventListener('click', resetBuyFee);
-    document.getElementById('calcBtn').addEventListener('click', compute);
-    document.getElementById('resetBtn').addEventListener('click', resetAll);
-    document.getElementById('exampleBtn').addEventListener('click', loadExample);
+            // ----- 核心更新函数 -----
+            function updateAll() {
+                // ---------- 第一步：读取并计算原始概况 ----------
+                const holdShares = toNum(elHoldShares.value);
+                const holdCost = toNum(elHoldCost.value);
+                const netValue1 = toNum(elNetValue1.value);
 
-    // ===== 初始化 =====
-    document.querySelectorAll('input[type="number"]').forEach(el => {
-        if (!el.hasAttribute('step')) el.setAttribute('step', '0.0001');
-    });
-    compute();
-    console.log('📈 两步高抛低吸（2.1+2.2）已加载');
-})();
-</script>
+                const totalInvest = holdShares * holdCost;
+                const holdAmount = holdShares * netValue1;
+                const holdProfit = holdAmount - totalInvest;
+                const holdReturn = totalInvest !== 0 ? holdProfit / totalInvest : 0;
+
+                // 显示第一步
+                setValPlain(elTotalInvest, totalInvest, 2);
+                setValPlain(elHoldAmount, holdAmount, 2);
+                setVal(elHoldProfit, holdProfit, 2);
+                setVal(elHoldReturn, holdReturn, 2, true);
+
+                // ---------- 第二步：涨幅卖出 ----------
+                // 今日净值 = 第一步的今日净值（固定）
+                const netValue2 = netValue1;
+                elNetValue2.value = fmt4(netValue2);
+
+                const riseRate = toNum(elRiseRate.value);
+                // 涨幅预估净值
+                const riseNet = netValue2 * (1 + riseRate / 100);
+                elRiseNet.value = fmt4(riseNet);
+
+                const sellShares = toNum(elSellShares.value);
+                const feeRate2 = toNum(elFeeRate2.value) / 100; // 转为小数
+
+                // 卖出金额 = 净值 * 份额 * (1 - 费率)
+                const sellAmount = riseNet * sellShares * (1 - feeRate2);
+                elSellAmountDisplay.textContent = fmt2(sellAmount);
+                elSellAmountDisplay.className = 'value ' + colorClass(sellAmount);
+
+                // 剩余概况
+                const remainShares = Math.max(0, holdShares - sellShares);
+                const remainInvest = remainShares * holdCost;
+                const remainAmount = remainShares * riseNet;
+                const remainProfit = remainAmount - remainInvest;
+                const remainReturn = remainInvest !== 0 ? remainProfit / remainInvest : 0;
+
+                setValPlain(elRemainShares, remainShares, 2);
+                setValPlain(elRemainInvest, remainInvest, 2);
+                setValPlain(elRemainAmount, remainAmount, 2);
+                setVal(elRemainProfit, remainProfit, 2);
+                setVal(elRemainReturn, remainReturn, 2, true);
+
+                // ---------- 第三步：跌幅买入 ----------
+                // 处理第三步今日净值：如果未被手动修改，则自动同步为 riseNet；否则保留用户输入
+                const currentNet3Raw = elNetValue3.value.trim();
+                const currentNet3 = toNum(currentNet3Raw);
+
+                let netValue3;
+                if (!isNetValue3ManuallyEdited) {
+                    // 自动同步
+                    netValue3 = riseNet;
+                    elNetValue3.value = fmt4(netValue3);
+                } else {
+                    // 用户已手动修改，保留用户输入
+                    netValue3 = currentNet3;
+                    // 但如果用户输入的值与 riseNet 相等（数值差极小），则认为用户想恢复同步，重置标志
+                    if (Math.abs(currentNet3 - riseNet) < 1e-8) {
+                        isNetValue3ManuallyEdited = false;
+                        netValue3 = riseNet;
+                        elNetValue3.value = fmt4(netValue3);
+                    }
+                }
+
+                // 跌幅（允许负数）
+                const dropRate = toNum(elDropRate.value);
+                // 跌幅预估净值 = 今日净值 × (1 + 跌幅%)，跌幅为负数时净值下跌
+                const dropNet = netValue3 * (1 + dropRate / 100);
+                elDropNet.value = fmt4(dropNet);
+
+                // 买入份额：默认 = 第二步的卖出份额，但用户可修改
+                const defaultBuyShares = sellShares;
+                const currentBuySharesRaw = elBuyShares.value.trim();
+                const currentBuyShares = toNum(currentBuySharesRaw);
+                let buyShares;
+                if (currentBuySharesRaw === '' || Math.abs(currentBuyShares - defaultBuyShares) < 0.00001) {
+                    buyShares = defaultBuyShares;
+                    elBuyShares.value = fmt2(buyShares);
+                } else {
+                    buyShares = currentBuyShares;
+                }
+
+                const feeRate3 = toNum(elFeeRate3.value) / 100; // 转为小数
+
+                // 买入金额 = 净值 * 份额 * (1 + 费率)
+                const buyAmount = dropNet * buyShares * (1 + feeRate3);
+                elBuyAmountDisplay.textContent = fmt2(buyAmount);
+                elBuyAmountDisplay.className = 'value ' + colorClass(buyAmount);
+
+                // 差价 = 卖出金额 - 买入金额
+                const diffAmount = sellAmount - buyAmount;
+                setValBig(elDiffAmount, diffAmount, 2);
+
+                // 新持仓成本
+                const newTotalShares = remainShares + buyShares;
+                const newTotalInvest = remainInvest + buyAmount;
+                const newCost = newTotalShares !== 0 ? newTotalInvest / newTotalShares : 0;
+
+                setValPlain(elNewCost, newCost, 4);
+                elNewCost.className = 'value big';
+
+                // 成本降低 = 原持仓成本 - 新持仓成本
+                const costReduce = holdCost - newCost;
+                setValBig(elCostReduce, costReduce, 4);
+
+                // 新概况
+                const newTotalAmount = newTotalShares * netValue3;
+                const newTotalProfit = newTotalAmount - newTotalInvest;
+                const newTotalReturn = newTotalInvest !== 0 ? newTotalProfit / newTotalInvest : 0;
+
+                setValPlain(elNewTotalShares, newTotalShares, 2);
+                setValPlain(elNewTotalInvest, newTotalInvest, 2);
+                setValPlain(elNewTotalAmount, newTotalAmount, 2);
+                setVal(elNewTotalProfit, newTotalProfit, 2);
+                setVal(elNewTotalReturn, newTotalReturn, 2, true);
+            }
+
+            // ----- 事件绑定 -----
+            // 当用户主动修改第三步净值时，标记为已手动修改
+            elNetValue3.addEventListener('input', function() {
+                const val = this.value.trim();
+                if (val === '') {
+                    isNetValue3ManuallyEdited = false;
+                } else {
+                    const riseNet = toNum(elRiseNet.value);
+                    const current = toNum(val);
+                    if (Math.abs(current - riseNet) > 1e-8) {
+                        isNetValue3ManuallyEdited = true;
+                    } else {
+                        isNetValue3ManuallyEdited = false;
+                    }
+                }
+                updateAll();
+            });
+
+            elNetValue3.addEventListener('blur', function() {
+                if (this.value.trim() === '') {
+                    isNetValue3ManuallyEdited = false;
+                    updateAll();
+                }
+            });
+
+            // 所有输入框（除了只读的）触发更新
+            const allInputs = [
+                elHoldShares, elHoldCost, elNetValue1,
+                elRiseRate, elSellShares, elFeeRate2,
+                elDropRate, elBuyShares, elFeeRate3
+            ];
+
+            allInputs.forEach(el => {
+                el.addEventListener('input', updateAll);
+                el.addEventListener('change', updateAll);
+                el.addEventListener('focus', function() {
+                    this.select();
+                });
+            });
+
+            // 第二步的今日净值是只读的，不需要绑定事件
+
+            // ----- 初始化 -----
+            const initNet1 = toNum(elNetValue1.value);
+            elNetValue2.value = fmt4(initNet1);
+
+            const initRise = toNum(elRiseRate.value);
+            const initRiseNet = initNet1 * (1 + initRise / 100);
+            elRiseNet.value = fmt4(initRiseNet);
+
+            elNetValue3.value = fmt4(initRiseNet);
+            isNetValue3ManuallyEdited = false;
+
+            const initDrop = toNum(elDropRate.value);
+            const initDropNet = initRiseNet * (1 + initDrop / 100);
+            elDropNet.value = fmt4(initDropNet);
+
+            updateAll();
+
+            console.log('📊 基金做反T工具已启动 · 数据实时联动');
+            console.log('💡 第三步净值默认同步第二步，手动修改后即锁定，再次改为默认值可恢复同步');
+        })();
+    </script>
+
 </body>
 </html>
